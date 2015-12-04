@@ -22,6 +22,7 @@ signals:
     void sig_preview(QPixmap frame);
 public slots:
     void slot_open_video(QString filename);
+    void slot_update_preview(double progress);
 };
 
 #endif // VIDEO_HANDLER_H

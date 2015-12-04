@@ -18,7 +18,7 @@ void video_handler::slot_open_video(QString filename)
 {
     video_feed = new VideoCapture(filename.toStdString().c_str());
 
-    if(! video_feed->isOpened())
+    if(! video_feed -> isOpened())
     {
         cout << "Error: Cannot open file." << endl;
         return;
@@ -35,3 +35,19 @@ void video_handler::slot_open_video(QString filename)
     return;
 }
 
+void video_handler::slot_update_preview(double progress)
+{
+    if(! video_feed -> isOpened())
+        return;
+
+    video_feed -> set(CV_CAP_PROP_POS_AVI_RATIO, progress);
+    Mat frame;
+    video_feed -> read(frame);
+    QImage preview = util -> mat_2_qimage(frame);
+    preview = preview.scaledToWidth(600);
+    QPixmap preview_pixmap;
+    preview_pixmap.convertFromImage(preview);
+    emit sig_preview(preview_pixmap);
+
+    return;
+}

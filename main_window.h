@@ -13,6 +13,7 @@
 #include <QToolButton>
 #include <QThread>
 #include <QLabel>
+#include <QSlider>
 #include "video_handler.h"
 
 namespace Ui {
@@ -40,6 +41,7 @@ private:
 
     QFrame* tool_frame;
     QFrame* thumbnail_frame;
+    QSlider* seek_slider;
 
     QWidget* main_widget;
 
@@ -53,6 +55,9 @@ private:
 public slots:
     void slot_open_video_file();
     //void slot_display_preview(QImage frame);
+    void slot_update_progress(int value);
+signals:
+    void sig_progress_changed(double progress);
 };
 
 #endif // MAIN_WINDOW_H

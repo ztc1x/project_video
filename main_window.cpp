@@ -32,8 +32,6 @@ main_window::main_window(QWidget *parent) :
     tools_layout = new QHBoxLayout();
 
     preview_label = new QLabel();
-    //preview_label -> setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    //preview_label -> setFixedSize(600, 440);
     preview_layout = new QHBoxLayout();
     preview_inner_layout = new QVBoxLayout();
     preview_inner_layout -> addStretch();
@@ -49,6 +47,8 @@ main_window::main_window(QWidget *parent) :
 
     tool_frame = new QFrame();
     thumbnail_frame = new QFrame();
+    seek_slider = new QSlider(Qt::Horizontal);
+    seek_slider -> setRange(0, 999);
     preview_frame -> setFrameStyle(QFrame::Box || QFrame::Plain);
     tool_frame -> setFrameStyle(QFrame::Box || QFrame::Plain);
     thumbnail_frame -> setFrameStyle(QFrame::Box || QFrame::Plain);
@@ -56,6 +56,7 @@ main_window::main_window(QWidget *parent) :
     tools_layout -> addWidget(tool_frame);
     main_layout -> addLayout(tools_layout);
     main_layout -> addWidget(thumbnail_frame);
+    main_layout -> addWidget(seek_slider);
 
     main_widget = new QWidget();
     main_widget -> setLayout(main_layout);
@@ -75,6 +76,9 @@ main_window::main_window(QWidget *parent) :
     connect(open_video_dialog, SIGNAL(fileSelected(QString)), handler, SLOT(slot_open_video(QString)));
     connect(handler, SIGNAL(sig_preview(QPixmap)), preview_label, SLOT(setPixmap(QPixmap)));
 
+    connect(seek_slider, SIGNAL(valueChanged(int)), this, SLOT(slot_update_progress(int)));
+    connect(this, SIGNAL(sig_progress_changed(double)), handler, SLOT(slot_update_preview(double)));
+
     handler_thread -> start();
 }
 
@@ -87,5 +91,10 @@ void main_window::slot_open_video_file()
 {
     open_video_dialog -> exec();
     return;
+}
+
+void main_window::slot_update_progress(int value)
+{
+    emit sig_progress_changed((double)value / 1000.0);
 }
 
