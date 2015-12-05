@@ -14,6 +14,8 @@
 #include <QThread>
 #include <QLabel>
 #include <QSlider>
+#include <QGroupBox>
+#include <QVector>
 #include "video_handler.h"
 
 namespace Ui {
@@ -34,13 +36,17 @@ private:
     QVBoxLayout* main_layout;
     QHBoxLayout* tools_layout;
 
-    QFrame* preview_frame;
+    QGroupBox* preview_frame;
     QHBoxLayout* preview_layout;
     QVBoxLayout* preview_inner_layout;
     QLabel* preview_label;
 
-    QFrame* tool_frame;
-    QFrame* thumbnail_frame;
+    QGroupBox* tool_frame;
+    QGroupBox* thumbnail_frame;
+    QHBoxLayout* timeline_layout;
+    QHBoxLayout* thumbnail_layout;
+    QVBoxLayout* timeline_inner_layout;
+    QLabel* thumbnail_label[10];
     QSlider* seek_slider;
 
     QWidget* main_widget;
@@ -48,14 +54,19 @@ private:
     QToolBar* file_toolbar;
     QToolButton* open_file_btn;
 
+    QToolBar* ops_toolbar;
+    QToolButton* coordinate_btn;
+    QToolButton* cuboid_btn;
+
     QFileDialog* open_video_dialog;
 
     QThread* handler_thread;
     video_handler* handler;
 public slots:
     void slot_open_video_file();
-    //void slot_display_preview(QImage frame);
     void slot_update_progress(int value);
+    void slot_reset_slider();
+    void slot_load_timeline(QPixmap* thumbnails, int cnt);
 signals:
     void sig_progress_changed(double progress);
 };

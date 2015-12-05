@@ -5,6 +5,7 @@
 #include <QString>
 #include <QImage>
 #include <QPixmap>
+#include <QVector>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include "utils.h"
@@ -20,6 +21,7 @@ public:
 
 signals:
     void sig_preview(QPixmap frame);
+    void sig_timeline(QPixmap* thumbnails, int cnt);
 public slots:
     void slot_open_video(QString filename);
     void slot_update_preview(double progress);

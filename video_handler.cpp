@@ -4,6 +4,7 @@
 #include <QString>
 #include <QImage>
 #include <QPixmap>
+#include <QVector>
 #include <string>
 #include <iostream>
 using namespace cv;
@@ -31,6 +32,22 @@ void video_handler::slot_open_video(QString filename)
     QPixmap first_frame_pixmap;
     first_frame_pixmap.convertFromImage(first_frame);
     emit sig_preview(first_frame_pixmap);
+
+    QPixmap* thumbnails = new QPixmap[10];
+    for(int i = 0; i < 10; i ++)
+    {
+        double progress = (double)i / 10.0;
+        video_feed -> set(CV_CAP_PROP_POS_AVI_RATIO, progress);
+        video_feed -> read(frame);
+        QImage frame_img = util -> mat_2_qimage(frame);
+        frame_img = frame_img.scaledToWidth(88);
+        QPixmap tmp_pixmap;
+        tmp_pixmap.convertFromImage(frame_img);
+        thumbnails[i] = tmp_pixmap;
+    }
+    emit sig_timeline(thumbnails, 10);
+
+    video_feed -> set(CV_CAP_PROP_POS_AVI_RATIO, 0);
 
     return;
 }
