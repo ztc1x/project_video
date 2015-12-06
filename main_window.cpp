@@ -1,5 +1,4 @@
 #include "main_window.h"
-#include "ui_main_window.h"
 #include "video_handler.h"
 #include <iostream>
 #include <QHBoxLayout>
@@ -19,11 +18,8 @@
 using namespace std;
 
 main_window::main_window(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::main_window)
+    QMainWindow(parent)
 {
-    ui->setupUi(this);
-
     this -> setFixedSize(960, 660);
     this -> setWindowTitle("Video Marker");
 
@@ -116,7 +112,6 @@ main_window::main_window(QWidget *parent) :
 
 main_window::~main_window()
 {
-    delete ui;
 }
 
 void main_window::slot_open_video_file()

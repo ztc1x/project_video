@@ -31,8 +31,6 @@ public:
     ~main_window();
 
 private:
-    Ui::main_window *ui;
-
     QVBoxLayout* main_layout;
     QHBoxLayout* tools_layout;
 
