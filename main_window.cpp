@@ -3,6 +3,7 @@
 #include <iostream>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
+#include <QGridLayout>
 #include <QFrame>
 #include <QWidget>
 #include <QToolBar>
@@ -14,7 +15,9 @@
 #include <QPixmap>
 #include <QSpacerItem>
 #include <QGroupBox>
-#include <QVector>
+#include <QTextEdit>
+#include <QLineEdit>
+#include <QStackedLayout>
 using namespace std;
 
 main_window::main_window(QWidget *parent) :
@@ -39,12 +42,55 @@ main_window::main_window(QWidget *parent) :
     preview_layout -> addStretch();
     preview_layout -> addLayout(preview_inner_layout);
     preview_layout -> addStretch();
-
     preview_frame = new QGroupBox("Preview");
     preview_frame -> setLayout(preview_layout);
     preview_frame -> setFixedSize(640, 480);
 
     tool_frame = new QGroupBox("Actions");
+    toolset_layout = new QStackedLayout();
+
+    coordinate_widget = new QWidget();
+    coordinate_layout = new QVBoxLayout();
+    coordinate_inner_layout = new QGridLayout();
+    origin_btn = new QPushButton("Origin");
+    origin_disp = new QLineEdit();
+    coordinate_inner_layout -> addWidget(origin_btn, 0, 0, 1, 1);
+    coordinate_inner_layout -> addWidget(origin_disp, 0, 1, 1, 1);
+    x_btn = new QPushButton("X Axis");
+    x_disp = new QLineEdit();
+    coordinate_inner_layout -> addWidget(x_btn, 1, 0, 1, 1);
+    coordinate_inner_layout -> addWidget(x_disp, 1, 1, 1, 1);
+    y_btn = new QPushButton("Y Axis");
+    y_disp = new QLineEdit();
+    coordinate_inner_layout -> addWidget(y_btn, 2, 0, 1, 1);
+    coordinate_inner_layout -> addWidget(y_disp, 2, 1, 1, 1);
+    z_btn = new QPushButton("Z Axis");
+    z_disp = new QLineEdit();
+    coordinate_inner_layout -> addWidget(z_btn, 3, 0, 1, 1);
+    coordinate_inner_layout -> addWidget(z_disp, 3, 1, 1, 1);
+    coordinate_layout -> addStretch();
+    coordinate_layout -> addLayout(coordinate_inner_layout);
+    coordinate_layout -> addStretch();
+    coordinate_widget -> setLayout(coordinate_layout);
+    toolset_layout -> addWidget(coordinate_widget);
+
+    cuboid_widget = new QWidget();
+    cuboid_layout = new QVBoxLayout();
+    cuboid_inner_layout = new QGridLayout();
+    for(int i = 0; i < 8; i ++)
+    {
+        points_btn[i] = new QPushButton("Point");
+        points_disp[i] = new QLineEdit();
+        cuboid_inner_layout -> addWidget(points_btn[i], i, 0, 1, 1);
+        cuboid_inner_layout -> addWidget(points_disp[i], i, 1, 1, 1);
+    }
+    cuboid_layout -> addStretch();
+    cuboid_layout -> addLayout(cuboid_inner_layout);
+    cuboid_layout -> addStretch();
+    cuboid_widget -> setLayout(cuboid_layout);
+    toolset_layout -> addWidget(cuboid_widget);
+
+    tool_frame -> setLayout(toolset_layout);
 
     thumbnail_frame = new QGroupBox("Timeline");
     thumbnail_layout = new QHBoxLayout();
@@ -106,6 +152,8 @@ main_window::main_window(QWidget *parent) :
     connect(handler, SIGNAL(sig_timeline(QPixmap*, int)), this, SLOT(slot_load_timeline(QPixmap*, int)));
     connect(seek_slider, SIGNAL(valueChanged(int)), this, SLOT(slot_update_progress(int)));
     connect(this, SIGNAL(sig_progress_changed(double)), handler, SLOT(slot_update_preview(double)));
+    connect(coordinate_btn, SIGNAL(clicked(bool)), this, SLOT(slot_switch_coordinate_interface()));
+    connect(cuboid_btn, SIGNAL(clicked(bool)), this, SLOT(slot_switch_cuboid_interface()));
 
     handler_thread -> start();
 }
@@ -138,5 +186,17 @@ void main_window::slot_load_timeline(QPixmap* thumbnails, int cnt)
     {
         thumbnail_label[i] -> setPixmap(thumbnails[i]);
     }
+    return;
+}
+
+void main_window::slot_switch_coordinate_interface()
+{
+    toolset_layout -> setCurrentIndex(0);
+    return;
+}
+
+void main_window::slot_switch_cuboid_interface()
+{
+    toolset_layout -> setCurrentIndex(1);
     return;
 }

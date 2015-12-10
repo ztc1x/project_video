@@ -16,6 +16,8 @@
 #include <QSlider>
 #include <QGroupBox>
 #include <QVector>
+#include <QStackedLayout>
+#include <QLineEdit>
 #include "video_handler.h"
 
 namespace Ui {
@@ -40,6 +42,18 @@ private:
     QLabel* preview_label;
 
     QGroupBox* tool_frame;
+    QStackedLayout* toolset_layout;
+    QWidget* coordinate_widget;
+    QVBoxLayout* coordinate_layout;
+    QGridLayout* coordinate_inner_layout;
+    QPushButton *origin_btn, *x_btn, *y_btn, *z_btn;
+    QLineEdit *origin_disp, *x_disp, *y_disp, *z_disp;
+    QWidget* cuboid_widget;
+    QVBoxLayout* cuboid_layout;
+    QGridLayout* cuboid_inner_layout;
+    QPushButton* points_btn[8];
+    QLineEdit* points_disp[8];
+
     QGroupBox* thumbnail_frame;
     QHBoxLayout* timeline_layout;
     QHBoxLayout* thumbnail_layout;
@@ -65,6 +79,8 @@ public slots:
     void slot_update_progress(int value);
     void slot_reset_slider();
     void slot_load_timeline(QPixmap* thumbnails, int cnt);
+    void slot_switch_coordinate_interface();
+    void slot_switch_cuboid_interface();
 signals:
     void sig_progress_changed(double progress);
 };
