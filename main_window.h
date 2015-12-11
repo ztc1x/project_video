@@ -18,7 +18,9 @@
 #include <QVector>
 #include <QStackedLayout>
 #include <QLineEdit>
+#include <QPainter>
 #include "video_handler.h"
+#include "canvas.h"
 
 namespace Ui {
 class main_window;
@@ -39,7 +41,8 @@ private:
     QGroupBox* preview_frame;
     QHBoxLayout* preview_layout;
     QVBoxLayout* preview_inner_layout;
-    QLabel* preview_label;
+    canvas* preview_label;
+    QPainter* marker;
 
     QGroupBox* tool_frame;
     QStackedLayout* toolset_layout;
@@ -74,6 +77,8 @@ private:
 
     QThread* handler_thread;
     video_handler* handler;
+
+    int state;
 public slots:
     void slot_open_video_file();
     void slot_update_progress(int value);
@@ -81,6 +86,9 @@ public slots:
     void slot_load_timeline(QPixmap* thumbnails, int cnt);
     void slot_switch_coordinate_interface();
     void slot_switch_cuboid_interface();
+    void slot_mark_point(int x, int y);
+
+    void slot_set_state_coord_orig();
 signals:
     void sig_progress_changed(double progress);
 };

@@ -14,11 +14,13 @@ TEMPLATE = app
 SOURCES += main.cpp\
         main_window.cpp \
     video_handler.cpp \
-    utils.cpp
+    utils.cpp \
+    canvas.cpp
 
 HEADERS  += main_window.h \
     video_handler.h \
-    utils.h
+    utils.h \
+    canvas.h
 
 INCLUDEPATH += /usr/local/include
 

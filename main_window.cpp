@@ -1,5 +1,6 @@
 #include "main_window.h"
 #include "video_handler.h"
+#include "canvas.h"
 #include <iostream>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -18,11 +19,15 @@
 #include <QTextEdit>
 #include <QLineEdit>
 #include <QStackedLayout>
+#include <QPainter>
+#include <QPoint>
 using namespace std;
 
 main_window::main_window(QWidget *parent) :
     QMainWindow(parent)
 {
+    state = 0x00;
+
     this -> setFixedSize(960, 660);
     this -> setWindowTitle("Video Marker");
 
@@ -33,7 +38,7 @@ main_window::main_window(QWidget *parent) :
     main_layout = new QVBoxLayout();
     tools_layout = new QHBoxLayout();
 
-    preview_label = new QLabel();
+    preview_label = new canvas();
     preview_layout = new QHBoxLayout();
     preview_inner_layout = new QVBoxLayout();
     preview_inner_layout -> addStretch();
@@ -45,6 +50,11 @@ main_window::main_window(QWidget *parent) :
     preview_frame = new QGroupBox("Preview");
     preview_frame -> setLayout(preview_layout);
     preview_frame -> setFixedSize(640, 480);
+
+    marker = new QPainter();
+    QBrush brush;
+    brush.setColor(QColor(255, 255, 255));
+    //marker -> setBrush(brush);
 
     tool_frame = new QGroupBox("Actions");
     toolset_layout = new QStackedLayout();
@@ -154,6 +164,8 @@ main_window::main_window(QWidget *parent) :
     connect(this, SIGNAL(sig_progress_changed(double)), handler, SLOT(slot_update_preview(double)));
     connect(coordinate_btn, SIGNAL(clicked(bool)), this, SLOT(slot_switch_coordinate_interface()));
     connect(cuboid_btn, SIGNAL(clicked(bool)), this, SLOT(slot_switch_cuboid_interface()));
+    connect(preview_label, SIGNAL(sig_mark_point(int,int)), this, SLOT(slot_mark_point(int,int)));
+    connect(origin_btn, SIGNAL(clicked(bool)), this, SLOT(slot_set_state_coord_orig()));
 
     handler_thread -> start();
 }
@@ -198,5 +210,23 @@ void main_window::slot_switch_coordinate_interface()
 void main_window::slot_switch_cuboid_interface()
 {
     toolset_layout -> setCurrentIndex(1);
+    return;
+}
+
+void main_window::slot_mark_point(int x, int y)
+{
+    if(state != 0x00)
+    {
+        marker -> begin(preview_label);
+        QPoint point(x, y);
+        marker -> drawEllipse(point, 3, 3);
+        marker -> end();
+    }
+    return;
+}
+
+void main_window::slot_set_state_coord_orig()
+{
+    state = 0x01;
     return;
 }
