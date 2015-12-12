@@ -31,7 +31,8 @@ void video_handler::slot_open_video(QString filename)
     first_frame = first_frame.scaledToWidth(600);
     QPixmap first_frame_pixmap;
     first_frame_pixmap.convertFromImage(first_frame);
-    emit sig_preview(first_frame_pixmap);
+    //emit sig_preview(first_frame_pixmap);
+    emit sig_preview_image(first_frame);
 
     QPixmap* thumbnails = new QPixmap[10];
     for(int i = 0; i < 10; i ++)
@@ -62,9 +63,11 @@ void video_handler::slot_update_preview(double progress)
     video_feed -> read(frame);
     QImage preview = util -> mat_2_qimage(frame);
     preview = preview.scaledToWidth(600);
+    /*
     QPixmap preview_pixmap;
     preview_pixmap.convertFromImage(preview);
     emit sig_preview(preview_pixmap);
-
+    */
+    emit sig_preview_image(preview);
     return;
 }

@@ -21,6 +21,7 @@ public:
 
 signals:
     void sig_preview(QPixmap frame);
+    void sig_preview_image(QImage image);
     void sig_timeline(QPixmap* thumbnails, int cnt);
 public slots:
     void slot_open_video(QString filename);

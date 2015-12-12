@@ -158,7 +158,7 @@ main_window::main_window(QWidget *parent) :
 
     connect(open_video_dialog, SIGNAL(fileSelected(QString)), handler, SLOT(slot_open_video(QString)));
     connect(open_video_dialog, SIGNAL(fileSelected(QString)), this, SLOT(slot_reset_slider()));
-    connect(handler, SIGNAL(sig_preview(QPixmap)), preview_label, SLOT(setPixmap(QPixmap)));
+    connect(handler, SIGNAL(sig_preview_image(QImage)), preview_label, SLOT(slot_set_image(QImage)));
     connect(handler, SIGNAL(sig_timeline(QPixmap*, int)), this, SLOT(slot_load_timeline(QPixmap*, int)));
     connect(seek_slider, SIGNAL(valueChanged(int)), this, SLOT(slot_update_progress(int)));
     connect(this, SIGNAL(sig_progress_changed(double)), handler, SLOT(slot_update_preview(double)));
