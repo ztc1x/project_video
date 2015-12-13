@@ -13,18 +13,18 @@ canvas::canvas() : QLabel()
 
 void canvas::mousePressEvent(QMouseEvent *ev)
 {
-    next_x = ev -> x();
-    next_y = ev -> y();
-    //this -> update();
-    QPainter* painter = new QPainter();
-    painter -> begin(&frame);
-    painter -> drawEllipse(QPoint(next_x, next_y), 3, 3);
-    painter -> end();
-    QPixmap tmp;
-    tmp.convertFromImage(frame);
-    this -> setPixmap(tmp);
-    this -> update();
-    std::cout << "Mouse clicked at (" << ev -> x() << ", " << ev -> y() << ")" << std::endl;
+    if(state != 0x00)
+    {
+        QPainter* painter = new QPainter();
+        painter -> begin(&frame);
+        painter -> drawEllipse(QPoint(ev -> x(), ev -> y()), 3, 3);
+        painter -> end();
+        QPixmap tmp;
+        tmp.convertFromImage(frame);
+        this -> setPixmap(tmp);
+        this -> update();
+        emit sig_point_marked(ev -> x(), ev -> y());
+    }
     return;
 }
 
@@ -35,5 +35,11 @@ void canvas::slot_set_image(QImage image)
     tmp.convertFromImage(frame);
     this -> setPixmap(tmp);
     this -> update();
+    return;
+}
+
+void canvas::slot_change_state(int new_state)
+{
+    state = new_state;
     return;
 }

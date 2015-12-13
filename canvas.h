@@ -12,15 +12,15 @@ class canvas : public QLabel
 public:
     canvas();
 private:
-    int next_x, next_y;
     QImage frame;
+    int state;
 protected:
     void mousePressEvent(QMouseEvent *ev);
-    //void paintEvent(QPaintEvent *ev);
 signals:
-    //void sig_mark_point(int x, int y);
+    void sig_point_marked(int x, int y);
 public slots:
     void slot_set_image(QImage image);
+    void slot_change_state(int new_state);
 };
 
 #endif // CANVAS_H

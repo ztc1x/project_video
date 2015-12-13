@@ -15,12 +15,14 @@ SOURCES += main.cpp\
         main_window.cpp \
     video_handler.cpp \
     utils.cpp \
-    canvas.cpp
+    canvas.cpp \
+    marker.cpp
 
 HEADERS  += main_window.h \
     video_handler.h \
     utils.h \
-    canvas.h
+    canvas.h \
+    marker.h
 
 INCLUDEPATH += /usr/local/include
 

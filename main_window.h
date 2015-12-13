@@ -21,6 +21,7 @@
 #include <QPainter>
 #include "video_handler.h"
 #include "canvas.h"
+#include "marker.h"
 
 namespace Ui {
 class main_window;
@@ -42,7 +43,6 @@ private:
     QHBoxLayout* preview_layout;
     QVBoxLayout* preview_inner_layout;
     canvas* preview_label;
-    QPainter* marker;
 
     QGroupBox* tool_frame;
     QStackedLayout* toolset_layout;
@@ -78,6 +78,8 @@ private:
     QThread* handler_thread;
     video_handler* handler;
 
+    marker* recorder;
+
     int state;
 public slots:
     void slot_open_video_file();
@@ -86,11 +88,16 @@ public slots:
     void slot_load_timeline(QPixmap* thumbnails, int cnt);
     void slot_switch_coordinate_interface();
     void slot_switch_cuboid_interface();
-    void slot_mark_point(int x, int y);
 
     void slot_set_state_coord_orig();
+    void slot_set_state_coord_x();
+    void slot_set_state_coord_y();
+    void slot_set_state_coord_z();
+    void slot_point_marked(int x, int y);
+    void slot_release_button();
 signals:
     void sig_progress_changed(double progress);
+    void sig_state_changed(int new_state);
 };
 
 #endif // MAIN_WINDOW_H

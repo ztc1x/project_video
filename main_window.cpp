@@ -1,6 +1,4 @@
 #include "main_window.h"
-#include "video_handler.h"
-#include "canvas.h"
 #include <iostream>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -21,12 +19,18 @@
 #include <QStackedLayout>
 #include <QPainter>
 #include <QPoint>
+#include <QString>
+#include "video_handler.h"
+#include "canvas.h"
+#include "marker.h"
 using namespace std;
 
 main_window::main_window(QWidget *parent) :
     QMainWindow(parent)
 {
     state = 0x00;
+
+    recorder = new marker();
 
     this -> setFixedSize(960, 660);
     this -> setWindowTitle("Video Marker");
@@ -50,11 +54,6 @@ main_window::main_window(QWidget *parent) :
     preview_frame = new QGroupBox("Preview");
     preview_frame -> setLayout(preview_layout);
     preview_frame -> setFixedSize(640, 480);
-
-    marker = new QPainter();
-    QBrush brush;
-    brush.setColor(QColor(255, 255, 255));
-    //marker -> setBrush(brush);
 
     tool_frame = new QGroupBox("Actions");
     toolset_layout = new QStackedLayout();
@@ -162,10 +161,19 @@ main_window::main_window(QWidget *parent) :
     connect(handler, SIGNAL(sig_timeline(QPixmap*, int)), this, SLOT(slot_load_timeline(QPixmap*, int)));
     connect(seek_slider, SIGNAL(valueChanged(int)), this, SLOT(slot_update_progress(int)));
     connect(this, SIGNAL(sig_progress_changed(double)), handler, SLOT(slot_update_preview(double)));
+
     connect(coordinate_btn, SIGNAL(clicked(bool)), this, SLOT(slot_switch_coordinate_interface()));
     connect(cuboid_btn, SIGNAL(clicked(bool)), this, SLOT(slot_switch_cuboid_interface()));
-    connect(preview_label, SIGNAL(sig_mark_point(int,int)), this, SLOT(slot_mark_point(int,int)));
-    connect(origin_btn, SIGNAL(clicked(bool)), this, SLOT(slot_set_state_coord_orig()));
+
+    connect(origin_btn, SIGNAL(pressed()), this, SLOT(slot_set_state_coord_orig()));
+    connect(x_btn, SIGNAL(pressed()), this, SLOT(slot_set_state_coord_x()));
+    connect(y_btn, SIGNAL(pressed()), this, SLOT(slot_set_state_coord_y()));
+    connect(z_btn, SIGNAL(pressed()), this, SLOT(slot_set_state_coord_z()));
+    connect(this, SIGNAL(sig_state_changed(int)), preview_label, SLOT(slot_change_state(int)));
+    connect(this, SIGNAL(sig_state_changed(int)), recorder, SLOT(slot_change_state(int)));
+    connect(preview_label, SIGNAL(sig_point_marked(int,int)), this, SLOT(slot_point_marked(int,int)));
+    connect(preview_label, SIGNAL(sig_point_marked(int,int)), recorder, SLOT(slot_point_marked(int,int)));
+    connect(preview_label, SIGNAL(sig_point_marked(int,int)), this, SLOT(slot_release_button()));
 
     handler_thread -> start();
 }
@@ -213,20 +221,71 @@ void main_window::slot_switch_cuboid_interface()
     return;
 }
 
-void main_window::slot_mark_point(int x, int y)
-{
-    if(state != 0x00)
-    {
-        marker -> begin(preview_label);
-        QPoint point(x, y);
-        marker -> drawEllipse(point, 3, 3);
-        marker -> end();
-    }
-    return;
-}
-
 void main_window::slot_set_state_coord_orig()
 {
     state = 0x01;
+    origin_btn -> setDisabled(true);
+    emit sig_state_changed(state);
+    return;
+}
+
+void main_window::slot_set_state_coord_x()
+{
+    state = 0x02;
+    x_btn -> setDisabled(true);
+    emit sig_state_changed(state);
+    return;
+}
+
+void main_window::slot_set_state_coord_y()
+{
+    state = 0x03;
+    y_btn -> setDisabled(true);
+    emit sig_state_changed(state);
+    return;
+}
+
+void main_window::slot_set_state_coord_z()
+{
+    state = 0x04;
+    z_btn -> setDisabled(true);
+    emit sig_state_changed(state);
+    return;
+}
+
+void main_window::slot_point_marked(int x, int y)
+{
+    QString text = "(";
+    text += QString::number(x);
+    text += ", ";
+    text += QString::number(y);
+    text += ")";
+
+    if(state == 0x01)
+        origin_disp -> setText(text);
+    else if(state == 0x02)
+        x_disp -> setText(text);
+    else if(state == 0x03)
+        y_disp -> setText(text);
+    else if(state == 0x04)
+        z_disp -> setText(text);
+
+    return;
+}
+
+void main_window::slot_release_button()
+{
+    if(state == 0x01)
+        origin_btn -> setDisabled(false);
+    else if(state == 0x02)
+        x_btn -> setDisabled(false);
+    else if(state == 0x03)
+        y_btn -> setDisabled(false);
+    else if(state == 0x04)
+        z_btn -> setDisabled(false);
+
+    state = 0x00;
+    emit sig_state_changed(state);
+
     return;
 }
