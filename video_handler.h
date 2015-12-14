@@ -23,6 +23,8 @@ signals:
     void sig_preview(QPixmap frame);
     void sig_preview_image(QImage image);
     void sig_timeline(QPixmap* thumbnails, int cnt);
+    void sig_info(int width, int height, int fps, double duration);
+    void sig_scale(int vid_w, int vid_h, int port_w, int port_h);
 public slots:
     void slot_open_video(QString filename);
     void slot_update_preview(double progress);

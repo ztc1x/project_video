@@ -41,6 +41,8 @@ main_window::main_window(QWidget *parent) :
 
     main_layout = new QVBoxLayout();
     tools_layout = new QHBoxLayout();
+    panel_layout = new QVBoxLayout();
+    dummy_layout = new QVBoxLayout();
 
     preview_label = new canvas();
     preview_layout = new QHBoxLayout();
@@ -105,6 +107,16 @@ main_window::main_window(QWidget *parent) :
 
     tool_frame -> setLayout(toolset_layout);
 
+    info_frame = new QGroupBox("Video Info");
+    info_layout = new QVBoxLayout();
+    info_size = new QLabel("Size: ");
+    info_fps = new QLabel("Framerate: ");
+    info_duration = new QLabel("Length: ");
+    info_layout -> addWidget(info_size);
+    info_layout -> addWidget(info_fps);
+    info_layout -> addWidget(info_duration);
+    info_frame -> setLayout(info_layout);
+
     thumbnail_frame = new QGroupBox("Timeline");
     thumbnail_layout = new QHBoxLayout();
     for(int i = 0; i < 10; i ++)
@@ -128,8 +140,12 @@ main_window::main_window(QWidget *parent) :
     timeline_layout -> addLayout(timeline_inner_layout);
     timeline_layout -> addStretch();
     thumbnail_frame -> setLayout(timeline_layout);
-    tools_layout -> addWidget(preview_frame);
-    tools_layout -> addWidget(tool_frame);
+
+    dummy_layout -> addWidget(preview_frame);
+    panel_layout -> addWidget(tool_frame);
+    panel_layout -> addWidget(info_frame);
+    tools_layout -> addLayout(dummy_layout);
+    tools_layout -> addLayout(panel_layout);
     main_layout -> addLayout(tools_layout);
     main_layout -> addWidget(thumbnail_frame);
 
@@ -161,8 +177,11 @@ main_window::main_window(QWidget *parent) :
 
     connect(open_video_dialog, SIGNAL(fileSelected(QString)), handler, SLOT(slot_open_video(QString)));
     connect(open_video_dialog, SIGNAL(fileSelected(QString)), this, SLOT(slot_reset_slider()));
+
     connect(handler, SIGNAL(sig_preview_image(QImage)), preview_label, SLOT(slot_set_image(QImage)));
     connect(handler, SIGNAL(sig_timeline(QPixmap*, int)), this, SLOT(slot_load_timeline(QPixmap*, int)));
+    connect(handler, SIGNAL(sig_info(int,int,int,double)), this, SLOT(slot_show_info(int,int,int,double)));
+
     connect(seek_slider, SIGNAL(valueChanged(int)), this, SLOT(slot_update_progress(int)));
     connect(seek_slider, SIGNAL(valueChanged(int)), this, SLOT(slot_release_buttons()));
     connect(this, SIGNAL(sig_progress_changed(double)), handler, SLOT(slot_update_preview(double)));
@@ -176,8 +195,10 @@ main_window::main_window(QWidget *parent) :
     connect(z_btn, SIGNAL(pressed()), this, SLOT(slot_set_state_coord_z()));
     connect(this, SIGNAL(sig_state_changed(int)), preview_label, SLOT(slot_change_state(int)));
     connect(this, SIGNAL(sig_state_changed(int)), recorder, SLOT(slot_change_state(int)));
-    connect(preview_label, SIGNAL(sig_point_marked(int,int)), this, SLOT(slot_point_marked(int,int)));
+    // connect(preview_label, SIGNAL(sig_point_marked(int,int)), this, SLOT(slot_point_marked(int,int)));
+    connect(handler, SIGNAL(sig_scale(int,int,int,int)), recorder, SLOT(slot_set_scale(int,int,int,int)));
     connect(preview_label, SIGNAL(sig_point_marked(int,int)), recorder, SLOT(slot_point_marked(int,int)));
+    connect(recorder, SIGNAL(sig_point_marked(int,int)), this, SLOT(slot_point_marked(int,int)));
     connect(preview_label, SIGNAL(sig_point_marked(int,int)), this, SLOT(slot_reset_state()));
 
     handler_thread -> start();
@@ -211,6 +232,41 @@ void main_window::slot_load_timeline(QPixmap* thumbnails, int cnt)
     {
         thumbnail_label[i] -> setPixmap(thumbnails[i]);
     }
+    return;
+}
+
+void main_window::slot_show_info(int width, int height, int fps, double duration)
+{
+    QString size_text = "Size: ";
+    size_text += QString::number(width);
+    size_text += "x";
+    size_text += QString::number(height);
+    info_size -> setText(size_text);
+
+    QString fps_text = "Framerate: ";
+    fps_text += QString::number(fps);
+    fps_text += "FPS";
+    info_fps -> setText(fps_text);
+
+    QString duration_text = "Length: ";
+    int length = (int)duration;
+    if(length > 3600)
+    {
+        int hours = length / 3600;
+        length = length % 3600;
+        duration_text += QString::number(hours);
+        duration_text += "h ";
+    }
+    if(length > 60)
+    {
+        int mins = length / 60;
+        length = length % 60;
+        duration_text += QString::number(mins);
+        duration_text += "m ";
+    }
+    duration_text += QString::number(length);
+    duration_text += "s";
+    info_duration -> setText(duration_text);
     return;
 }
 

@@ -38,6 +38,8 @@ public:
 private:
     QVBoxLayout* main_layout;
     QHBoxLayout* tools_layout;
+    QVBoxLayout* panel_layout;
+    QVBoxLayout* dummy_layout;
 
     QGroupBox* preview_frame;
     QHBoxLayout* preview_layout;
@@ -45,6 +47,7 @@ private:
     canvas* preview_label;
 
     QGroupBox* tool_frame;
+    QVBoxLayout* tool_layout;
     QStackedLayout* toolset_layout;
     QWidget* coordinate_widget;
     QVBoxLayout* coordinate_layout;
@@ -56,6 +59,12 @@ private:
     QGridLayout* cuboid_inner_layout;
     QPushButton* points_btn[8];
     QLineEdit* points_disp[8];
+
+    QGroupBox* info_frame;
+    QVBoxLayout* info_layout;
+    QLabel* info_size;
+    QLabel* info_fps;
+    QLabel* info_duration;
 
     QGroupBox* thumbnail_frame;
     QHBoxLayout* timeline_layout;
@@ -86,6 +95,7 @@ public slots:
     void slot_update_progress(int value);
     void slot_reset_slider();
     void slot_load_timeline(QPixmap* thumbnails, int cnt);
+    void slot_show_info(int width, int height, int fps, double duration);
     void slot_switch_coordinate_interface();
     void slot_switch_cuboid_interface();
 
