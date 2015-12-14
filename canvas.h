@@ -14,6 +14,11 @@ public:
 private:
     QImage frame;
     int state;
+    int coord_orig_x, coord_orig_y;
+    int coord_x_x, coord_x_y;
+    int coord_y_x, coord_y_y;
+    int coord_z_x, coord_z_y;
+    bool coord_orig, coord_x, coord_y, coord_z;
 protected:
     void mousePressEvent(QMouseEvent *ev);
 signals:

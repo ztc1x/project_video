@@ -94,7 +94,8 @@ public slots:
     void slot_set_state_coord_y();
     void slot_set_state_coord_z();
     void slot_point_marked(int x, int y);
-    void slot_release_button();
+    void slot_release_buttons();
+    void slot_reset_state();
 signals:
     void sig_progress_changed(double progress);
     void sig_state_changed(int new_state);

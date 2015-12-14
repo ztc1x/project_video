@@ -63,18 +63,22 @@ main_window::main_window(QWidget *parent) :
     coordinate_inner_layout = new QGridLayout();
     origin_btn = new QPushButton("Origin");
     origin_disp = new QLineEdit();
+    origin_disp -> setReadOnly(true);
     coordinate_inner_layout -> addWidget(origin_btn, 0, 0, 1, 1);
     coordinate_inner_layout -> addWidget(origin_disp, 0, 1, 1, 1);
     x_btn = new QPushButton("X Axis");
     x_disp = new QLineEdit();
+    x_disp -> setReadOnly(true);
     coordinate_inner_layout -> addWidget(x_btn, 1, 0, 1, 1);
     coordinate_inner_layout -> addWidget(x_disp, 1, 1, 1, 1);
     y_btn = new QPushButton("Y Axis");
     y_disp = new QLineEdit();
+    y_disp -> setReadOnly(true);
     coordinate_inner_layout -> addWidget(y_btn, 2, 0, 1, 1);
     coordinate_inner_layout -> addWidget(y_disp, 2, 1, 1, 1);
     z_btn = new QPushButton("Z Axis");
     z_disp = new QLineEdit();
+    z_disp -> setReadOnly(true);
     coordinate_inner_layout -> addWidget(z_btn, 3, 0, 1, 1);
     coordinate_inner_layout -> addWidget(z_disp, 3, 1, 1, 1);
     coordinate_layout -> addStretch();
@@ -160,6 +164,7 @@ main_window::main_window(QWidget *parent) :
     connect(handler, SIGNAL(sig_preview_image(QImage)), preview_label, SLOT(slot_set_image(QImage)));
     connect(handler, SIGNAL(sig_timeline(QPixmap*, int)), this, SLOT(slot_load_timeline(QPixmap*, int)));
     connect(seek_slider, SIGNAL(valueChanged(int)), this, SLOT(slot_update_progress(int)));
+    connect(seek_slider, SIGNAL(valueChanged(int)), this, SLOT(slot_release_buttons()));
     connect(this, SIGNAL(sig_progress_changed(double)), handler, SLOT(slot_update_preview(double)));
 
     connect(coordinate_btn, SIGNAL(clicked(bool)), this, SLOT(slot_switch_coordinate_interface()));
@@ -173,7 +178,7 @@ main_window::main_window(QWidget *parent) :
     connect(this, SIGNAL(sig_state_changed(int)), recorder, SLOT(slot_change_state(int)));
     connect(preview_label, SIGNAL(sig_point_marked(int,int)), this, SLOT(slot_point_marked(int,int)));
     connect(preview_label, SIGNAL(sig_point_marked(int,int)), recorder, SLOT(slot_point_marked(int,int)));
-    connect(preview_label, SIGNAL(sig_point_marked(int,int)), this, SLOT(slot_release_button()));
+    connect(preview_label, SIGNAL(sig_point_marked(int,int)), this, SLOT(slot_reset_state()));
 
     handler_thread -> start();
 }
@@ -273,19 +278,27 @@ void main_window::slot_point_marked(int x, int y)
     return;
 }
 
-void main_window::slot_release_button()
+void main_window::slot_release_buttons()
 {
-    if(state == 0x01)
-        origin_btn -> setDisabled(false);
-    else if(state == 0x02)
-        x_btn -> setDisabled(false);
-    else if(state == 0x03)
-        y_btn -> setDisabled(false);
-    else if(state == 0x04)
-        z_btn -> setDisabled(false);
+    origin_btn -> setEnabled(true);
+    x_btn -> setEnabled(true);
+    y_btn -> setEnabled(true);
+    z_btn -> setEnabled(true);
+
+    origin_disp -> setText("");
+    x_disp -> setText("");
+    y_disp -> setText("");
+    z_disp -> setText("");
 
     state = 0x00;
     emit sig_state_changed(state);
 
+    return;
+}
+
+void main_window::slot_reset_state()
+{
+    state = 0x00;
+    emit sig_state_changed(state);
     return;
 }
